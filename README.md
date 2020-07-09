@@ -5,7 +5,7 @@
 
 
 **How does it work?** To make the hands motion activated, I've created two controllers. Each contains a gyro/accelerometer and 3 buttons which are wired directly to an Arduino Uno. Additionally, an HC-06 Bluetooth controller is connected:
-![Wiring Diagram](exampleImages/digram.jpg)
+![Wiring Diagram](exampleImages/diagram.jpg)
 
 The bluetooth module relays all of the data from the gyroscope and buttons directly to the Unity app on the phone, so that it can respond appropriately. The user interface of the app is a Unity android app. This gives it access to the device's gyroscope, so no additional devices are needed to make the screen react to motion.
 
