@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
 
 /**
 Car VR
@@ -30,6 +31,7 @@ public class SimpleCarController : MonoBehaviour {
     public float maxSteeringAngle;
 	private float motor;
 	private float braker;
+
 	
 	/* Find all objects */
 	public void Start() {
@@ -39,6 +41,9 @@ public class SimpleCarController : MonoBehaviour {
 			root = GameObject.Find("carRoot");
 			brake = GameObject.Find("brake");
 			gas = GameObject.Find("gas");
+			
+			GameObject.Find("Main Camera").GetComponent<Camera>().enabled = true;
+			GameObject.Find("Camera").GetComponent<Camera>().enabled = false;
 	}
 	
      
@@ -68,15 +73,27 @@ public class SimpleCarController : MonoBehaviour {
 		motor = 0;
 		braker = 0;
 		setMotor();
-		pushPedals(KeyCode.LeftShift, gas);
-		pushPedals(KeyCode.LeftControl, brake);
+		
+		pushPedals(GetComponent<XYAxis>().getRightGreen(), gas);
+		pushPedals(GetComponent<XYAxis>().getLeftGreen(), brake);
+		
 		
 		//rotate steering wheel
-		float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
+		
+		float steering = maxSteeringAngle * GetComponent<XYAxis>().getLeftX() * 4;
+		if (!GetComponent<Hands>().leftSteer) {
+			steering = 0;
+		}
 		float y = body.transform.eulerAngles[1] + 90;
 		steeringWheel.transform.rotation = Quaternion.Euler(steering,y,90);
 		
 		spinWheels(steering);
+		
+		
+		if (GetComponent<XYAxis>().getLeftRed()) {
+			GameObject.Find("Main Camera").GetComponent<Camera>().enabled = false;
+			GameObject.Find("Camera").GetComponent<Camera>().enabled = true;
+		}
 	 
 	}
 	
@@ -90,7 +107,8 @@ public class SimpleCarController : MonoBehaviour {
 		}
 		// in park don't move
 		if (GetComponent<GearShift>().pos == "P") {
-			braker = Mathf.Infinity;
+			//braker = Mathf.Infinity;
+			braker = 0;
 			motor = 0;
 		}
 		// in neutral don't stop movement, just motor
@@ -119,8 +137,8 @@ public class SimpleCarController : MonoBehaviour {
 	}
 	
 	/* Called every iteration, pushes pedals reguardless of gear */
-	private void pushPedals(KeyCode code, GameObject pedal) {
-		if (Input.GetKey(code)) {
+	private void pushPedals(bool button, GameObject pedal) {
+		if (button) {
 			//push pedal
 			Vector3 loc = pedal.transform.eulerAngles;
 			loc[0] = -20;
@@ -136,12 +154,12 @@ public class SimpleCarController : MonoBehaviour {
 	/* Only called when in D or R */
 	private void setDriveMotor(float sign) {
 		//gas
-		if (Input.GetKey(KeyCode.LeftShift)) {
+		if (GetComponent<XYAxis>().getRightGreen() && GetComponent<Hands>().rightSteer) {
 			root.GetComponent<Rigidbody>().isKinematic = false;
 			motor = maxMotorTorque * 10 * sign;
 		} 
 		//brake
-		if (Input.GetKey(KeyCode.LeftControl)) {
+		if (GetComponent<XYAxis>().getLeftGreen()&& GetComponent<Hands>().leftSteer) {
 			braker = maxMotorTorque * 15;
 		}
 	}

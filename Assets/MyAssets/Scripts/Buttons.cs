@@ -38,12 +38,11 @@ public class Buttons : MonoBehaviour
     }
 	
 	/* Check buttons pressed */
-    void Update() {
+    void FixedUpdate() {
 		checkButtons(button1);
 		checkButtons(button2);
 		checkButtons(button3);
 		checkButtons(button4);	
-		buttonFunctions();
 	
 		if (wiping) {
 			wipe();
@@ -54,38 +53,38 @@ public class Buttons : MonoBehaviour
 		If colliding, button pressed, and button red, turn off */
 	private void checkButtons(GameObject button) {
 		if (button.GetComponent<Collider>().bounds.Intersects(rightHand.GetComponent<Collider>().bounds) 
-		&& Input.GetKeyDown("return")
-		&& button.GetComponent<Renderer>().material.GetColor("_Color") != Color.red) {
+		&& GetComponent<XYAxis>().getRightRed()
+		&& button.GetComponent<Renderer>().material.GetColor("_Color") != Color.red
+		&& !GetComponent<Hands>().pointing) {
 			button.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
 			GetComponent<Hands>().startPoint = DateTime.Now;
 			GetComponent<Hands>().pointing = true;
 			GetComponent<Hands>().changeHands(rightPoint, rightPalm);
 			turnOn(button);
 		} else if (button.GetComponent<Collider>().bounds.Intersects(rightHand.GetComponent<Collider>().bounds) 
-		&& Input.GetKeyDown("return")
-		&& button.GetComponent<Renderer>().material.GetColor("_Color") == Color.red) {
+		&& GetComponent<XYAxis>().getRightRed()
+		&& button.GetComponent<Renderer>().material.GetColor("_Color") == Color.red
+		&& !GetComponent<Hands>().pointing) {
+			GetComponent<Hands>().startPoint = DateTime.Now;
+			GetComponent<Hands>().pointing = true;
+			GetComponent<Hands>().changeHands(rightPoint, rightPalm);
 			button.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
 			turnOff(button);
 		}
 	}
 	
 	/* Roll down window */
-	private bool rolldown(GameObject window) {
-		if (window.transform.position[1] > 6.6) {
-			window.transform.Translate(0,-0.1F,0);
-			return false;
-		}
-		return true;
+	private void rolldown(GameObject window) {
+		Camera cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+		float y = cam.WorldToScreenPoint(window.transform.position)[1];
+		window.transform.Translate(0,-10F,0);
 	}
 	
 	/* Roll up window */
-	private bool rollup(GameObject window) {
-		
-		if (window.transform.position[1] < 8.8) {
-			window.transform.Translate(0,0.1F,0);
-			return false;
-		}
-		return true;
+	private void rollup(GameObject window) {
+		Camera cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+		float y = cam.WorldToScreenPoint(window.transform.position)[1];
+		window.transform.Translate(0,10F,0);
 	}
 	
 	/* Activate button when first pressed */
@@ -98,13 +97,11 @@ public class Buttons : MonoBehaviour
 			//left window down
 			GameObject window = GameObject.Find("leftWindow");
 			rolldown(window);
-			buttons[0] = true;
 		}
 		if (button == button3) {
 			//right window down
 			GameObject window = GameObject.Find("rightWindow");
 			rolldown(window);
-			buttons[1] = true;
 		}
 		if (button == button4) {
 			//windshied wipers
@@ -112,41 +109,7 @@ public class Buttons : MonoBehaviour
 		}
 	}
 	
-	/* Continues functions after first pressed */
-	private void buttonFunctions() {
-		if (buttons[0]) {
-			//left window down
-			GameObject window = GameObject.Find("leftWindow");
-			bool done = rolldown(window);
-			if (done) {
-				buttons[0] = false;
-			}
-		}
-		if (buttons[1]) {
-			//right window down
-			GameObject window = GameObject.Find("rightWindow");
-			bool done = rolldown(window);
-			if (done) {
-				buttons[1] = false;
-			}
-		}
-		if (buttons[2]) {
-			//left window up
-			GameObject window = GameObject.Find("leftWindow");
-			bool done = rollup(window);
-			if (done) {
-				buttons[2] = false;
-			}
-		}
-		if (buttons[3]) {
-			//right window up
-			GameObject window = GameObject.Find("rightWindow");
-			bool done = rollup(window);
-			if (done) {
-				buttons[3] = false;
-			}
-		}
-	}
+	
 	
 	/* Initiates turning off button */
 	private void turnOff(GameObject button) {
@@ -158,13 +121,11 @@ public class Buttons : MonoBehaviour
 			//left window up
 			GameObject window = GameObject.Find("leftWindow");
 			rollup(window);
-			buttons[2] = true;
 		}
 		if (button == button3) {
 			//right window up
 			GameObject window = GameObject.Find("rightWindow");
 			rollup(window);
-			buttons[3] = true;
 		}
 	}
 	
@@ -192,4 +153,5 @@ public class Buttons : MonoBehaviour
 			leftWiper.transform.rotation = Quaternion.Euler(temp[0], temp[1], 0);
 		}
 	}
+	
 }

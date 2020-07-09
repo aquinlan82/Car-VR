@@ -61,11 +61,13 @@
      <Compile Include="Assets\BluetoothAPI\Scripts\ScanScene2.cs" />
      <Compile Include="Assets\BluetoothAPI\Scripts\ScanSceneManager.cs" />
      <Compile Include="Assets\BluetoothAPI\Scripts\SphereContRot.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\Bluetooth.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Buttons.cs" />
      <Compile Include="Assets\MyAssets\Scripts\GearShift.cs" />
      <Compile Include="Assets\MyAssets\Scripts\Hands.cs" />
      <Compile Include="Assets\MyAssets\Scripts\MoveCamera.cs" />
      <Compile Include="Assets\MyAssets\Scripts\SimpleCarController.cs" />
+     <Compile Include="Assets\MyAssets\Scripts\XYAxis.cs" />
      <Compile Include="Assets\Scripts\CarSwitcher.cs" />
      <Compile Include="Assets\Scripts\DriftCamera.cs" />
      <Compile Include="Assets\Scripts\EasySuspension.cs" />

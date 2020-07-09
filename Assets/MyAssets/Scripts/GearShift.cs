@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class GearShift : MonoBehaviour {
 	
@@ -15,6 +16,7 @@ public class GearShift : MonoBehaviour {
 	public Material reverseSkin;
 	public Material neutralSkin;
 	public Material driveSkin;
+	private DateTime startTime;
 	
 	
     /* Find objects */
@@ -24,10 +26,11 @@ public class GearShift : MonoBehaviour {
 		rightHand = GameObject.Find("rightHand");
 		label = GameObject.Find("label");
 		pos = "P";
+		startTime = DateTime.Now;
     }
 
     /*  Handles grabbing shifter and changing modes */
-    void Update() {
+    void FixedUpdate() {
 		grabOrLetGo();
 
 		if (!shifting) {	
@@ -43,10 +46,10 @@ public class GearShift : MonoBehaviour {
 		string[] modes = new string[] {"P", "R", "N", "D" };
 		Material[] skins = new Material[] {parkSkin, reverseSkin, neutralSkin, driveSkin };
 		
-		for (int i = 0; i < modes.Length - 1; i++) {	
+		for (int i = 0; i < modes.Length; i++) {	
 			if (cur < increments[i] && cur > increments[i+1]) {
-				pos = modes[i+1];
-				label.GetComponent<MeshRenderer>().material = skins[i+1];
+				pos = modes[i];
+				label.GetComponent<MeshRenderer>().material = skins[i];
 			}
 		}
 	}
@@ -68,26 +71,37 @@ public class GearShift : MonoBehaviour {
 	
 	/* Get transitions between shift modes */
 	private float[] getIncrements() {
-		float width = (0.9F / 4F) - 0.01F;
-		float top = 0.4F;
+		float width = (label.transform.localScale[2] / 4F);
+		//Debug.Log(width + " " + GameObject.Find("label").transform.lossyScale[2]);
+		float centerWidth = label.transform.localScale[2] / 2;
+		float top = label.transform.localPosition[2] + centerWidth;
 		float underP = top - width;
 		float underR = top - (width * 2);
 		float underN = top - (width * 3);
 		float bottom = top - (width * 4); 
+		
+		
 		return new float[] {top, underP, underR, underN, bottom };
 	}
 	
 	/* To let go, press enter
 	   To grab, press gas and enter while touching shifter */
 	private void grabOrLetGo() {
-		if (shifting && Input.GetKeyDown("return")) {
+		if (shifting && GetComponent<XYAxis>().getRightRed() && sleepOver()) {
 			gearShift.transform.parent = GameObject.Find("gearshift").transform;
 			shifting = false;
+			startTime = DateTime.Now;
 		} else if (gearShift.GetComponent<Collider>().bounds.Intersects(rightHand.GetComponent<Collider>().bounds)
-		&& Input.GetKeyDown("return")
-		&& Input.GetKey(KeyCode.LeftControl) ) {
+		&& GetComponent<XYAxis>().getRightRed()
+		&& sleepOver()) {
 			gearShift.transform.parent = rightHand.transform;
 			shifting = true;
+			startTime = DateTime.Now;
 		}
 	}
+	
+	private bool sleepOver() {
+		return DateTime.Now > startTime.AddSeconds(1);
+	}
+	
 }
