@@ -100,6 +100,7 @@ public class GearShift : MonoBehaviour {
 		}
 	}
 	
+	/* True 1 second after start time set */
 	private bool sleepOver() {
 		return DateTime.Now > startTime.AddSeconds(1);
 	}

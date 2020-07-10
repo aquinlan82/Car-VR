@@ -43,7 +43,6 @@ public class SimpleCarController : MonoBehaviour {
 			gas = GameObject.Find("gas");
 			
 			GameObject.Find("Main Camera").GetComponent<Camera>().enabled = true;
-			GameObject.Find("Camera").GetComponent<Camera>().enabled = false;
 	}
 	
      
@@ -88,12 +87,6 @@ public class SimpleCarController : MonoBehaviour {
 		steeringWheel.transform.rotation = Quaternion.Euler(steering,y,90);
 		
 		spinWheels(steering);
-		
-		
-		if (GetComponent<XYAxis>().getLeftRed()) {
-			GameObject.Find("Main Camera").GetComponent<Camera>().enabled = false;
-			GameObject.Find("Camera").GetComponent<Camera>().enabled = true;
-		}
 	 
 	}
 	

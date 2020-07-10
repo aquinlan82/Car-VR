@@ -30,7 +30,7 @@ public class XYAxis : MonoBehaviour {
 		indicator = GameObject.Find("bar").GetComponent<Image>();
     }
 
-    /* Update is called once per  */ 
+    /* Get data from controller and translate for unity */
     void FixedUpdate() {
 		string data = blue.getMsg();
 		
